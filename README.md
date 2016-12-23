@@ -29,7 +29,7 @@ th train-entail.lua -parser 0
 ```
 The baseline model essentially replicates the results of Parikh et al. (2016). The only
 differences are that we use a hidden layer size of 300 (they use 200), batch size of 32 (they use 4),
-and we do vanilla SGD while they use asynchronous SGD.
+and train for 100 epochs (they train for 400 epochs with asynchronous SGD)
 
 Structured attention
 ```
