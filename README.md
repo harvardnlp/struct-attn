@@ -4,7 +4,7 @@ Code for the paper Structured Attention Networks.
 ## Neural Machine Translation
 
 ### Data
-The Japanese-English data can be downloaded by following the instructions at http://lotus.kuee.kyoto-u.ac.jp/ASPEC
+The Japanese-English data used for the paper can be downloaded by following the instructions at http://lotus.kuee.kyoto-u.ac.jp/ASPEC
 
 ### Preprocessing
 To preprocess the data, run
@@ -73,8 +73,8 @@ python get_pretrain_vecs.py --glove path-to-glove --outputfile data/glove.hdf5
 ### Training
 Baseline model
 ```
-th train.lua -data_file path-to-train -val_data_file path-to-val -test_data_file path-to-test
--pre_word_vecs path-to-word-vecs -savefile entail-simple
+th train-entail.lua -parser 0 -data_file path-to-train -val_data_file path-to-val
+-test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-simple
 ```
 Here `path-to-word-vecs` is the hdf5 file created from running `get_pretrain_vecs.py`.
 
