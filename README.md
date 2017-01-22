@@ -1,4 +1,6 @@
 # Structured Attention Networks
+Code for the paper Structured Attention Networks.
+
 ## Neural Machine Translation
 
 ### Data
@@ -17,15 +19,15 @@ batch size, etc.
 ### Training
 Baseline simple (i.e. softmax) attention model
 ```
-th train.lua -data_file path-to-train -val_data_file path-to-val -attn softmax -savefile nmt-simple
+th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn softmax -savefile nmt-simple
 ```
 Sigmoid attention
 ```
-th train.lua -data_file path-to-train -val_data_file path-to-val -attn sigmoid -savefile nmt-sigmoid
+th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn sigmoid -savefile nmt-sigmoid
 ```
 Structured attention (i.e. segmentation attention)
 ```
-th train.lua -data_file path-to-train -val_data_file path-to-val -attn crf -savefile nmt-struct
+th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn crf -savefile nmt-struct
 ```
 Here `path-to-train` and `path-to-val` are the `*.hdf5` files from running `preprocess-nmt.py`.
 You can add `-gpuid 1` to use the (first) GPU, and change the argument to `-savefile` if you
