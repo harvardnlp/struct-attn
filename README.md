@@ -71,23 +71,27 @@ python get_pretrain_vecs.py --glove path-to-glove --outputfile data/glove.hdf5
 `path-to-dict` is the `*.word.dict` file created from running `preprocess-entail.py`
 
 ### Training
-Baseline model
+Baseline model (i.e. no intra-sentence attention)
 ```
-th train-entail.lua -parser 0 -data_file path-to-train -val_data_file path-to-val
+th train-entail.lua -attn none -data_file path-to-train -val_data_file path-to-val
+-test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-baseline
+```
+Simple attention (i.e. softmax attention)
+```
+th train-entail.lua -attn simple -data_file path-to-train -val_data_file path-to-val
 -test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-simple
 ```
-Here `path-to-word-vecs` is the hdf5 file created from running `get_pretrain_vecs.py`.
-
-The baseline model essentially replicates the results of Parikh et al. (2016). The only
-differences are that we use a hidden layer size of 300 (they use 200), batch size of 32 (they use 4),
-and train for 100 epochs (they train for 400 epochs with asynchronous SGD)
-
 Structured attention (i.e. syntactic attention)
 ```
-th train-entail.lua -parser 1 -use_parent 1 -data_file path-to-train -val_data_file path-to-val
+th train-entail.lua -attn struct -data_file path-to-train -val_data_file path-to-val
 -test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-struct
 ```
-
-See `train-entail.lua` (or the paper) for hyperparameters and more training options.
+Here `path-to-word-vecs` is the hdf5 file created from running `get_pretrain_vecs.py` and
+the `path-to-train` are the `*.hdf5` files created from running `preprocess-entail.py`.
 You can add `-gpuid 1` to use the (first) GPU, and change the argument to `-savefile` if you
 wish to save to a different path.
+
+The baseline model essentially replicates [A Decomposable Attention Model for Natural Language Inference](https://arxiv.org/abs/1606.01933). Parikh et al. EMNLP 2016.
+The differences are that we use a hidden layer size of 300 (they use 200), batch size of 32 (they use 4), and train for 100 epochs (they train for 400 epochs with asynchronous SGD).
+
+See `train-entail.lua` (or the paper) for hyperparameters and more training options.

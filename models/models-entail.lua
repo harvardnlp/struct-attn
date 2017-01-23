@@ -103,14 +103,22 @@ function make_parser(rnn_size)
    scores = nn.Linear(rnn_size, 1, false)(score_view(scores)) -- batch_l*sent_l*sent_l x 1
    local score_unview = nn.View(batch_l, sent_l, sent_l)
    score_unview.name = 'score_unview'
-   scores = score_unview(scores)
+   scores = nn.Tanh()(score_unview(scores))
    local dep_parser = nn.EisnerCRF()
    dep_parser.name = 'dep_parser'
    local output
-   if opt.gpuid >= 0 then
-     output = nn.gpu()(dep_parser(nn.cpu()(nn.Tanh()(scores))))
-   else
-     output = dep_parser(nn.Tanh()(scores))
+   if opt.attn == 'struct' then
+     if opt.gpuid >= 0 then
+       output = nn.gpu()(dep_parser(nn.cpu()(nn.Tanh()(scores))))
+     else
+       output = dep_parser(scores)
+     end
+   elseif opt.attn == 'simple' then
+     local softmax_view = nn.View(batch_l*sent_l, sent_l)
+     softmax_view.name = 'softmax_view'
+     local softmax_unview = nn.View(batch_l, sent_l, sent_l)
+     softmax_unview.name = 'softmax_unview'
+     output = nn.Transpose({2,3})(softmax_unview(nn.SoftMax()(softmax_view(scores))))
    end   
    return nn.gModule({input}, {output})
 end
@@ -178,7 +186,7 @@ function set_size_encoder(batch_l, sent_l1, sent_l2, input_size, hidden_size, t)
    else
       size = input_size
    end
-   if opt.parser == 1 then
+   if opt.attn ~= 'none' then
       size = size * (opt.use_parent + opt.use_children + 1)
    end
    
@@ -277,7 +285,7 @@ function make_sent_encoder(input_size, hidden_size, num_labels, dropout)
       size = input_size
    end
    
-   if opt.parser == 1 then   
+   if opt.attn ~= 'none' then   
       table.insert(inputs, nn.Identity()()) -- batch_l x sent_l1 x sent_l1
       table.insert(inputs, nn.Identity()()) -- batch_l x sent_l2 x sent_l2
       local input1_tmp = input1_proj

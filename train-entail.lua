@@ -21,10 +21,13 @@ cmd:option('-savefile', 'entail', [[Savefile name]])
 -- model specs
 cmd:option('-hidden_size', 300, [[MLP hidden layer size]])
 cmd:option('-word_vec_size', 300, [[Word embedding size]])
-cmd:option('-parser', 0, [[Use a dependency parsing layer]])
-cmd:option('-num_layers_parser', 1, [[Number of layers in the parser]])
-cmd:option('-rnn_size_parser', 100, [[size of the RNN parser]])
-cmd:option('-use_parent', 0, [[Use soft parents]])
+cmd:option('-attn', 'none', [[one of {none, simple, struct}.
+                              none = no intra-sentence attention (baseline model)
+                              simple = simple attention model
+                              struct = structured attention (syntactic attention)]])
+cmd:option('-num_layers_parser', 1, [[Number of layers for the RNN parsing layer]])
+cmd:option('-rnn_size_parser', 100, [[size of the RNN for the parsing layer]])
+cmd:option('-use_parent', 1, [[Use soft parents]])
 cmd:option('-use_children', 0, [[Use soft children]])
 cmd:option('-share_params',1, [[Share parameters between the two sentence encoders]])
 cmd:option('-proj', 1, [[Have a projection layer from the Glove embeddings]])
@@ -89,7 +92,7 @@ function train(train_data, valid_data)
 
   --copy shared params   
   params[2]:copy(params[1])   
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     params[7]:copy(params[6])
   end
 
@@ -116,7 +119,7 @@ function train(train_data, valid_data)
   parser_graph2_grad_proto = torch.zeros(opt.max_batch_l, opt.max_sent_l, opt.word_vec_size*2)
   
   -- clone encoder/decoder up to max source/target length
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     parser_fwd_clones = clone_many_times(parser_fwd, opt.max_sent_l_src + opt.max_sent_l_targ)
     parser_bwd_clones = clone_many_times(parser_bwd, opt.max_sent_l_src + opt.max_sent_l_targ)
     for i = 1, opt.max_sent_l_src + opt.max_sent_l_targ do
@@ -193,7 +196,7 @@ function train(train_data, valid_data)
       local word_vecs1 = word_vecs_enc1:forward(source)
       local word_vecs2 = word_vecs_enc2:forward(target)	 
 
-      if opt.parser == 1 then
+      if opt.attn ~= 'none' then
 	set_size_encoder(batch_l, source_l, target_l, opt.word_vec_size,
 			 opt.hidden_size, entail_layers)	    
 	set_size_parser(batch_l, source_l, opt.rnn_size_parser*2, parser_layers1)
@@ -263,7 +266,7 @@ function train(train_data, valid_data)
       local dl_dp = disc_criterion:backward(pred_label, label)
       dl_dp:div(batch_l)
 
-      if opt.parser == 1 then
+      if opt.attn ~= 'none' then
 	local dl_dinput1, dl_dinput2, dl_dparser1, dl_dparser2 = table.unpack(
 	  sent_encoder:backward(pred_input, dl_dp))
 	------ backprop for graph-based parser ------
@@ -342,7 +345,7 @@ function train(train_data, valid_data)
       -- word vec layer and parser_graph layers are shared
       grad_params[1]:add(grad_params[2])
       grad_params[2]:zero()
-      if opt.parser == 1 then
+      if opt.attn ~= 'none' then
 	grad_params[6]:add(grad_params[7])
 	grad_params[7]:zero()
       end
@@ -394,7 +397,7 @@ function train(train_data, valid_data)
       param_norm = param_norm^0.5
 
       params[2]:copy(params[1])
-      if opt.parser == 1 then
+      if opt.attn ~= 'none' then
 	params[7]:copy(params[6])
       end
 
@@ -478,7 +481,7 @@ function eval(data)
     local sent2_context = sent2_context_proto[{{1, batch_l}}]      
     local word_vecs1 = word_vecs_enc1:forward(source) 	 
     local word_vecs2 = word_vecs_enc2:forward(target)
-    if opt.parser == 1 then
+    if opt.attn ~= 'none' then
       set_size_encoder(batch_l, source_l, target_l,
 		       opt.word_vec_size, opt.hidden_size, entail_layers)
       set_size_parser(batch_l, source_l, opt.rnn_size_parser*2, parser_layers1)
@@ -601,7 +604,7 @@ function main()
   -- Build model
   word_vecs_enc1 = nn.LookupTable(valid_data.source_size, opt.word_vec_size)
   word_vecs_enc2 = nn.LookupTable(valid_data.target_size, opt.word_vec_size)
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     parser_fwd = make_lstm(valid_data, opt.rnn_size_parser, opt.word_vec_size,
 			   opt.num_layers_parser, opt, 'enc')
     parser_bwd = make_lstm(valid_data, opt.rnn_size_parser, opt.word_vec_size,
@@ -619,7 +622,7 @@ function main()
   disc_criterion.sizeAverage = false
 
   
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     layers = {word_vecs_enc1, word_vecs_enc2, sent_encoder,
 	      parser_fwd, parser_bwd,
 	      parser_graph1, parser_graph2}
@@ -642,7 +645,7 @@ function main()
   end
 
   -- these layers will be manipulated during training
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     parser_layers1 = {}
     parser_layers2 = {}
     parser_graph1:apply(get_parser_layer1)
@@ -650,14 +653,16 @@ function main()
   end
   entail_layers = {}   
   sent_encoder:apply(get_entail_layer)
-  if opt.parser == 1 then
+  if opt.attn ~= 'none' then
     if opt.cuda_mod == 1 then
       require 'cuda-mod'
       parser_layers1.dep_parser.cuda_mod = 1
       parser_layers2.dep_parser.cuda_mod = 1
     else
-      parser_layers1.dep_parser:double()
-      parser_layers2.dep_parser:double()
+      if opt.attn == 'struct' then
+	parser_layers1.dep_parser:double()
+	parser_layers2.dep_parser:double()
+      end      
     end      
   end
   train(train_data, valid_data)

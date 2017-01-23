@@ -35,7 +35,7 @@ cmd:text("")
 cmd:text("**Optimization options**")
 cmd:text("")
 -- optimization
-cmd:option('-epochs', 25, [[Number of training epochs]])
+cmd:option('-epochs', 30, [[Number of training epochs]])
 cmd:option('-param_init', 0.1, [[Parameters are initialized over uniform distribution with support (-param_init, param_init)]])
 cmd:option('-optim', 'sgd', [[Optimization method. Possible options are: sgd (vanilla SGD), adagrad, adadelta, adam]])
 cmd:option('-learning_rate', 1, [[Starting learning rate. If adagrad/adadelta/adam is used,
