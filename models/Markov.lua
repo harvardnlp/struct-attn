@@ -131,10 +131,21 @@ function Markov:forward(forwardTable)
     self._tempDp:resize(batches, potentials[1]:size(2),
                               forwardTable[1]:size(3), potentials[1]:size(3))
     for i = 2, n+2 do
+        -- print('self._tempDp before')
+        -- print(self._tempDp)
         Util.logbmm2(forwardTable[i],
                          potentials[i-1],
                          forwardTable[i-1],
                          self._tempDp)
+        -- print('self._tempDp')
+        -- print(self._tempDp)
+        -- print('potentials[i-1]')
+        -- print(potentials[i-1])
+        -- print('forwardTable[i]')
+        -- print(forwardTable[i])
+        -- print('forwardTable[i-1]')
+        -- print(forwardTable[i-1])
+        -- self.des()
     end
     forwardTable[{n+2, {},  {2, -1}}]:fill(-math.huge)
 end
