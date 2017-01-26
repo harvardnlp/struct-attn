@@ -95,3 +95,29 @@ The baseline model essentially replicates [A Decomposable Attention Model for Na
 The differences are that we use a hidden layer size of 300 (they use 200), batch size of 32 (they use 4), and train for 100 epochs (they train for 400 epochs with asynchronous SGD).
 
 See `train-entail.lua` (or the paper) for hyperparameters and more training options.
+
+## Question Answering
+
+### Data
+The bAbI project (bAbI) dataset can be downloaded in all versions from https://research.fb.com/projects/babi/, or a copy of v1.0 from https://github.com/harvardnlp/MemN2N/tree/master/babi_data/en which this code was tested on. The latter is the 1k set where each task includes 1,000 questions.
+
+### Preprocessing
+
+First run:
+```
+python preprocess-qa.py -dir input-data-path -vocabsize max-vocabulary-size
+```
+
+This will create the data hdf5 files. Vocabulary is based on the input data, and will be written to `word_to_idx.csv`. 
+
+### Training
+For baseline model, see our [MemN2N implementation](https://github.com/harvardnlp/MemN2N).
+
+To train structured attention with a binary-potential CRF, use:
+```
+th train-qa.lua -datafile data-file.hdf5 -classifier classifier-type
+```
+Here `data-file.hdf5` is the hdf5 file created from running `preprocess-qa.py` and
+the `classifier` is either `binarycrf` or `unarycrf`. You can add `-cuda` to use the (first) GPU, and add `-save -saveminacc number` if you wish to save model (only if the accuracy on test set is at least that specified). To train with Position Encoding or Temporal Encoding (as described in [End-End Memory Networks](https://arxiv.org/pdf/1503.08895v5.pdf) Sukhbaatar et al. NIPS 2015), use `-pe` and `-te` respectively. Note that some default parameters (such as embedding size, max history etc...) are different from those used in the MemN2N paper. In addition, this code implements a 2-step CRF which is tested only on bAbI tasks with 2 supporting facts (however should in theory work for all tasks). 
+
+See `train-qa.lua` (or the paper) for hyperparameters and more training options.
