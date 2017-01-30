@@ -1,12 +1,26 @@
 # Structured Attention Networks
-Code for the paper Structured Attention Networks.
 
-## Neural Machine Translation
+Code for the paper Structured Attention Networks
 
-### Data
+## Dependencies
+Python: `h5py`, `numpy`
+
+Lua: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
+
+We additionally require the `cuda-mod` package which implements some custom
+CUDA functions for the linear-chain CRF. This can be installed via running
+
+```
+luarocks install https://github.com/harvardnlp/cuda-mod
+```
+
+## Models
+### Neural Machine Translation
+
+#### Data
 The Japanese-English data used for the paper can be downloaded by following the instructions at http://lotus.kuee.kyoto-u.ac.jp/ASPEC
 
-### Preprocessing
+#### Preprocessing
 To preprocess the data, run
 ```
 python preprocess-nmt.py --srcfile path-to-source-train --targetfile path-to-target-train
@@ -16,7 +30,7 @@ python preprocess-nmt.py --srcfile path-to-source-train --targetfile path-to-tar
 See the `preprocess-nmt.py` file for other arguments like maximum sequence length, vocabulary size,
 batch size, etc.
 
-### Training
+#### Training
 Baseline simple (i.e. softmax) attention model
 ```
 th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn softmax -savefile nmt-simple
@@ -33,7 +47,9 @@ Here `path-to-train` and `path-to-val` are the `*.hdf5` files from running `prep
 You can add `-gpuid 1` to use the (first) GPU, and change the argument to `-savefile` if you
 wish to save to a different path.
 
-### Evaluating
+Note: structured attention only works with the GPU.
+
+#### Evaluating
 ```
 th predict-nmt.lua -src_file path-to-source-test -targ_file path-to-target-test
 -src_dict path-to-source-dict -targ_dict -path-to-target-dict -output_file pred.txt
@@ -42,14 +58,16 @@ th predict-nmt.lua -src_file path-to-source-test -targ_file path-to-target-test
 Argument to `-targ_file` is optional. The code will output predictions to `pred.txt`, and
 you can again add `-gpuid 1` to use the GPU.
 
-## Natural Language Inference
+Evaluation is done with the `multi-bleu.perl` script from [Moses](https://github.com/moses-smt/mosesdecoder).
 
-### Data
+### Natural Language Inference
+
+#### Data
 Stanford Natural Language Inference (SNLI) dataset can be downloaded from http://nlp.stanford.edu/projects/snli/
 
 Pre-trained GloVe embeddings can be downloaded from http://nlp.stanford.edu/projects/glove/
 
-### Preprocessing
+#### Preprocessing
 
 First run:
 ```
@@ -70,7 +88,7 @@ python get_pretrain_vecs.py --glove path-to-glove --outputfile data/glove.hdf5
 ```
 `path-to-dict` is the `*.word.dict` file created from running `preprocess-entail.py`
 
-### Training
+#### Training
 Baseline model (i.e. no intra-sentence attention)
 ```
 th train-entail.lua -attn none -data_file path-to-train -val_data_file path-to-val
@@ -96,12 +114,12 @@ The differences are that we use a hidden layer size of 300 (they use 200), batch
 
 See `train-entail.lua` (or the paper) for hyperparameters and more training options.
 
-## Question Answering
+### Question Answering
 
-### Data
+#### Data
 The bAbI project (bAbI) dataset can be downloaded in all versions from https://research.fb.com/projects/babi/, or a copy of v1.0 from https://github.com/harvardnlp/MemN2N/tree/master/babi_data/en which this code was tested on. The latter is the 1k set where each task includes 1,000 questions.
 
-### Preprocessing
+#### Preprocessing
 
 First run:
 ```
@@ -110,7 +128,7 @@ python preprocess-qa.py -dir input-data-path -vocabsize max-vocabulary-size
 
 This will create the data hdf5 files. Vocabulary is based on the input data, and will be written to `word_to_idx.csv`. 
 
-### Training
+#### Training
 For baseline model, see our [MemN2N implementation](https://github.com/harvardnlp/MemN2N).
 
 To train structured attention with a binary-potential CRF, use:
