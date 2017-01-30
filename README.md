@@ -8,10 +8,11 @@ Python: `h5py`, `numpy`
 Lua: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
 
 We additionally require the `cuda-mod` package which implements some custom
-CUDA functions for the linear-chain CRF. This can be installed via running
+CUDA functions for the linear-chain CRF. This can be installed via
 
 ```
-luarocks install https://github.com/harvardnlp/cuda-mod
+git clone https://github.com/harvardnlp/cuda-mod
+cd cuda-mod && luarocks install rocks/cuda-mod-1.0-0.rockspec
 ```
 
 ## Models
