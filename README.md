@@ -6,8 +6,8 @@ Structured Attention Networks
 Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush
 
 ## Dependencies
-* **Python**: `h5py`, `numpy`
-* **Lua**: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
+* Python: `h5py`, `numpy`
+* Lua: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
 
 We additionally require the `cuda-mod` package which implements some custom
 CUDA functions for the linear-chain CRF. This can be installed via
