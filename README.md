@@ -24,7 +24,7 @@ can be found under the folder `models/`. Specifically:
 * `CRF.lua`: Segmentation attention layer (i.e. linear-chain CRF)
 * `EisnerCRF.lua`: Syntactic attention layer (i.e. first-order graph-based dependency parser)
 
-These layers are modular and therefore can be used as part of other deep models.
+These layers are modular and can be plugged into other deep models.
 We use them in place of standard simple (softmax) attention layers
 for neural machine translation, natural langage inference, and question answering
 (see below).
