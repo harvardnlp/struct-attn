@@ -6,9 +6,8 @@ Structured Attention Networks
 Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush
 
 ## Dependencies
-Python: `h5py`, `numpy`
-
-Lua: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
+* **Python**: `h5py`, `numpy`
+* **Lua**: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
 
 We additionally require the `cuda-mod` package which implements some custom
 CUDA functions for the linear-chain CRF. This can be installed via
@@ -21,7 +20,7 @@ cd cuda-mod && luarocks install rocks/cuda-mod-1.0-0.rockspec
 ## Models
 ### Neural Machine Translation
 
-#### Data
+* **Data**
 The Japanese-English data used for the paper can be downloaded by following the instructions at http://lotus.kuee.kyoto-u.ac.jp/ASPEC
 
 #### Preprocessing
