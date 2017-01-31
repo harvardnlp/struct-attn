@@ -20,7 +20,7 @@ cd cuda-mod && luarocks install rocks/cuda-mod-1.0-0.rockspec
 ## Models
 ### Neural Machine Translation
 
-* **Data**
+#### Data
 The Japanese-English data used for the paper can be downloaded by following the instructions at http://lotus.kuee.kyoto-u.ac.jp/ASPEC
 
 #### Preprocessing
@@ -50,7 +50,7 @@ Here `path-to-train` and `path-to-val` are the `*.hdf5` files from running `prep
 You can add `-gpuid 1` to use the (first) GPU, and change the argument to `-savefile` if you
 wish to save to a different path.
 
-**Note: structured attention only works with the GPU.**
+*Note: structured attention only works with the GPU.*
 
 #### Evaluating
 ```
