@@ -1,6 +1,9 @@
 # Structured Attention Networks
 
-Code for the paper Structured Attention Networks
+Code for the paper:
+
+Structured Attention Networks  
+Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush
 
 ## Dependencies
 Python: `h5py`, `numpy`
@@ -32,15 +35,15 @@ See the `preprocess-nmt.py` file for other arguments like maximum sequence lengt
 batch size, etc.
 
 #### Training
-Baseline simple (i.e. softmax) attention model
+*Baseline simple (i.e. softmax) attention model*
 ```
 th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn softmax -savefile nmt-simple
 ```
-Sigmoid attention
+*Sigmoid attention*
 ```
 th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn sigmoid -savefile nmt-sigmoid
 ```
-Structured attention (i.e. segmentation attention)
+*Structured attention (i.e. segmentation attention)*
 ```
 th train-nmt.lua -data_file path-to-train -val_data_file path-to-val -attn crf -savefile nmt-struct
 ```
@@ -48,7 +51,7 @@ Here `path-to-train` and `path-to-val` are the `*.hdf5` files from running `prep
 You can add `-gpuid 1` to use the (first) GPU, and change the argument to `-savefile` if you
 wish to save to a different path.
 
-Note: structured attention only works with the GPU.
+**Note: structured attention only works with the GPU.**
 
 #### Evaluating
 ```
@@ -90,17 +93,17 @@ python get_pretrain_vecs.py --glove path-to-glove --outputfile data/glove.hdf5
 `path-to-dict` is the `*.word.dict` file created from running `preprocess-entail.py`
 
 #### Training
-Baseline model (i.e. no intra-sentence attention)
+*Baseline model (i.e. no intra-sentence attention)*
 ```
 th train-entail.lua -attn none -data_file path-to-train -val_data_file path-to-val
 -test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-baseline
 ```
-Simple attention (i.e. softmax attention)
+*Simple attention (i.e. softmax attention)*
 ```
 th train-entail.lua -attn simple -data_file path-to-train -val_data_file path-to-val
 -test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-simple
 ```
-Structured attention (i.e. syntactic attention)
+*Structured attention (i.e. syntactic attention)*
 ```
 th train-entail.lua -attn struct -data_file path-to-train -val_data_file path-to-val
 -test_data_file path-to-test -pre_word_vecs path-to-word-vecs -savefile entail-struct

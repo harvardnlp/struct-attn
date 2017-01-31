@@ -234,9 +234,11 @@ def main(arguments):
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument('--srcvocabminfreq', help="Source vocab count limit. All words that occurred"                                               "less than this amount are replaced with UNK.",
+    parser.add_argument('--srcvocabminfreq', help="Source vocab count limit. All words that occurred"
+                                                  "less than this amount are replaced with UNK.",
                                                 type=int, default=10)
-    parser.add_argument('--targetvocabminfreq', help="Source vocab count limit. All words that occurred"                                               "less than this amount are replaced with UNK.",
+    parser.add_argument('--targetvocabminfreq', help="Source vocab count limit. All words that occurred"
+                                                     "less than this amount are replaced with UNK.",
                                                 type=int, default=10)
     parser.add_argument('--srcfile', help="Path to source training data, "
                                            "where each line represents a single "
