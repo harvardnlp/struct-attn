@@ -9,7 +9,7 @@ Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush
 * Python: `h5py`, `numpy`
 * Lua: `nn`, `nngraph`, `cutorch`, `cunn`, `nngraph`
 
-We additionally require the `cuda-mod` package which implements some custom
+We additionally require a custom `cuda-mod` package which implements some custom
 CUDA functions for the linear-chain CRF. This can be installed via
 
 ```
@@ -153,3 +153,6 @@ Here `data-file.hdf5` is the hdf5 file created from running `preprocess-qa.py` a
 the `classifier` is either `binarycrf` or `unarycrf`. You can add `-cuda` to use the (first) GPU, and add `-save -saveminacc number` if you wish to save model (only if the accuracy on test set is at least that specified). To train with Position Encoding or Temporal Encoding (as described in [End-End Memory Networks](https://arxiv.org/pdf/1503.08895v5.pdf) Sukhbaatar et al. NIPS 2015), use `-pe` and `-te` respectively. Note that some default parameters (such as embedding size, max history etc...) are different from those used in the MemN2N paper. In addition, this code implements a 2-step CRF which is tested only on bAbI tasks with 2 supporting facts (however should in theory work for all tasks). 
 
 See `train-qa.lua` (or the paper) for hyperparameters and more training options.
+
+## License
+MIT
