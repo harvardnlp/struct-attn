@@ -25,15 +25,9 @@ function data:__init(opt, data_file)
   self.source_size = f:read('source_size'):all()[1]
   self.target_nonzeros = f:read('target_nonzeros'):all()
 
-
   self.length = self.batch_l:size(1)
   self.seq_length = self.target:size(2)
   self.batches = {}
-  local max_source_l = self.source_l:max()
-  local source_l_rev = torch.ones(max_source_l):long()
-  for i = 1, max_source_l do
-    source_l_rev[i] = max_source_l - i + 1
-  end
   for i = 1, self.length do
     local target_output_i = self.target_output:sub(self.batch_idx[i],self.batch_idx[i]
       +self.batch_l[i]-1, 1, self.target_l[i])
