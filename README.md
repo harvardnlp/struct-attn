@@ -2,7 +2,7 @@
 
 Code for the paper:
 
-[Structured Attention Networks](https://arxiv.org/pdf/1702.0087)  
+[Structured Attention Networks](https://arxiv.org/pdf/1702.00887)  
 Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush  
 ICLR 2017
 
