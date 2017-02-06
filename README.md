@@ -2,8 +2,9 @@
 
 Code for the paper:
 
-Structured Attention Networks  
+[Structured Attention Networks](https://arxiv.org/pdf/1702.0087)
 Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush
+ICLR 2017
 
 ## Dependencies
 * Python: `h5py`, `numpy`
