@@ -3,7 +3,7 @@
 Code for the paper:
 
 [Structured Attention Networks](https://arxiv.org/pdf/1702.00887)  
-Yoon Kim, Carl Denton, Luong Hoang, and Alexander M.Rush  
+Yoon Kim, Carl Denton, Luong Hoang, and Alexander M. Rush   
 ICLR 2017
 
 ## Dependencies
