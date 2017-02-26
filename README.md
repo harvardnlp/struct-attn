@@ -99,7 +99,7 @@ Here `path-to-sent1-train` is the path to the `src-train.txt` file created from 
 
 `preprocess-entail.py` will create the data hdf5 files. Vocabulary is based on the pretrained Glove embeddings,
 with `path-to-glove` being the path to the pretrained Glove word vecs (i.e. the `glove.840B.300d.txt`
-file). `sent1` is the premise and `sent1` is the hypothesis.
+file). `sent1` is the premise and `sent2` is the hypothesis.
 
 Now run:
 ```
@@ -149,9 +149,9 @@ python preprocess-qa.py -dir input-data-path -vocabsize max-vocabulary-size
 This will create the data hdf5 files. Vocabulary is based on the input data, and will be written to `word_to_idx.csv`. 
 
 #### Training
-For baseline model, see our [MemN2N implementation](https://github.com/harvardnlp/MemN2N).
+For the baseline model, see our [MemN2N implementation](https://github.com/harvardnlp/MemN2N).
 
-To train structured attention with a binary-potential CRF, use:
+To train structured attention with binary-potential CRF, run:
 ```
 th train-qa.lua -datafile data-file.hdf5 -classifier classifier-type
 ```
