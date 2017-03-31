@@ -37,7 +37,6 @@ function data:__init(opt, data_file)
 			       1, self.source_l[i]):transpose(1,2)
     local target_i = self.target:sub(self.batch_idx[i], self.batch_idx[i]+self.batch_l[i]-1,
         1, self.target_l[i]):transpose(1,2)
-    end
     table.insert(self.batches, {target_i,
         target_output_i:transpose(1,2),
         self.target_nonzeros[i],
