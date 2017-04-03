@@ -119,10 +119,20 @@ function train(train_data, valid_data)
   end
 
   -- these are initial states of encoder/decoder for fwd/bwd steps
-  init_layer = {}
+  init_layer_enc = {}
+  init_layer_dec = {}
+  init_layer_enc_bwd = {}
+  init_layer_dec_bwd = {}
+  
   for L = 1, opt.num_layers do
-    table.insert(init_layer, h_init:clone())
-    table.insert(init_layer, h_init:clone())    
+    table.insert(init_layer_enc, h_init:clone())
+    table.insert(init_layer_enc, h_init:clone())
+    table.insert(init_layer_dec, h_init:clone())
+    table.insert(init_layer_dec, h_init:clone())    
+    table.insert(init_layer_enc_bwd, h_init:clone())
+    table.insert(init_layer_enc_bwd, h_init:clone())    
+    table.insert(init_layer_dec_bwd, h_init:clone())
+    table.insert(init_layer_dec_bwd, h_init:clone())        
   end
   
   function reset_state(state, batch_l, t)
@@ -179,7 +189,7 @@ function train(train_data, valid_data)
       local batch_l, target_l, source_l = d[5], d[6], d[7]
       local context = context_proto[{{1, batch_l}, {1, source_l}}]
       local context_grads = context_grad_proto[{{1, batch_l}, {1, source_l}}]:zero()
-      local rnn_state_enc = reset_state(init_layer, batch_l, 0)      
+      local rnn_state_enc = reset_state(init_layer_enc, batch_l, 0)      
       local encoder_inputs = {}
       -- forward prop encoder
       for t = 1, source_l do
@@ -190,7 +200,7 @@ function train(train_data, valid_data)
       end
 
       -- copy encoder last hidden state to decoder initial state
-      local rnn_state_dec = reset_state(init_layer, batch_l, 0)
+      local rnn_state_dec = reset_state(init_layer_dec, batch_l, 0)
       -- forward prop decoder
       local decoder_inputs = {}
       for t = 1, target_l do
@@ -202,7 +212,7 @@ function train(train_data, valid_data)
 	all_layers.crf.gradWeight:add(all_layers.crf.weight):mul(opt.lambda2)
       end      
       -- backward prop decoder
-      local drnn_state_dec = reset_state(init_layer, batch_l)
+      local drnn_state_dec = reset_state(init_layer_dec_bwd, batch_l)
       local loss = 0
       for t = target_l, 1, -1 do
 	local generator_input = {context, rnn_state_dec[t][#rnn_state_dec[t]]}
@@ -220,7 +230,7 @@ function train(train_data, valid_data)
       end
       word_vec_layers[2].gradWeight[1]:zero()
       -- backward prop encoder
-      local drnn_state_enc = reset_state(init_layer, batch_l)
+      local drnn_state_enc = reset_state(init_layer_enc_bwd, batch_l)
       for t = source_l, 1, -1 do
 	drnn_state_enc[#drnn_state_enc]:add(context_grads[{{},t}])
         local dlst = encoder_clones[t]:backward(encoder_inputs[t], drnn_state_enc)
@@ -304,8 +314,8 @@ function eval(data)
     local d = data[i]
     local target, target_out, nonzeros, source = d[1], d[2], d[3], d[4]
     local batch_l, target_l, source_l = d[5], d[6], d[7]
-    local rnn_state_enc = reset_state(init_layer, batch_l, 0)
     local context = context_proto[{{1, batch_l}, {1, source_l}}]
+    local rnn_state_enc = reset_state(init_layer_enc, batch_l, 0)    
     local encoder_inputs = {}
     -- forward prop encoder
     for t = 1, source_l do
@@ -315,9 +325,9 @@ function eval(data)
       context[{{},t}]:copy(rnn_state_enc[t][#rnn_state_enc[t]])
     end
 
-    local rnn_state_dec = reset_state(init_layer, batch_l, 0)
-    -- forward prop decoder
+    local rnn_state_dec = reset_state(init_layer_dec, batch_l, 0)
     local decoder_inputs = {}
+    -- forward prop decoder    
     for t = 1, target_l do
       decoder_clones[t]:evaluate()	
       decoder_inputs[t] = {target[t], table.unpack(rnn_state_dec[t-1])}
